@@ -1,12 +1,12 @@
 // Call the process 
-const process = require('./process.js');
+const process = require('./process');
 const fs = require('fs');
 const readline = require('readline');
-const fcfs = require('./fcfs.js').scheduler;
-const sjf = require('./sjf.js').scheduler;
-const nsjf = require('./sjf.js').scheduler_non;
-const rr = require('./roundrobin.js').scheduler;
-const Time = require('./timing.js').Time;
+const fcfs = require('./fcfs').scheduler;
+const sjf = require('./sjf').scheduler;
+const nsjf = require('./sjf').scheduler_non;
+const rr = require('./roundrobin').scheduler;
+const Time = require('./timing').Time;
 
 // Init the queue
 var queue = [];
@@ -22,6 +22,8 @@ var instream = fs.createReadStream(fileName);
 instream.on('end', () => { ended = true });
 
 var ended = false;
+
+//Init the readline object
 var rl = readline.createInterface(
 {
     input: instream,
@@ -33,53 +35,90 @@ var quantum = 0;
 // Mark for total CPU time requirment
 var totalTime = 0;
 
-rl.on('line', function(line){
+
+function generateChart(){
+    var text = fs.readFileSync('job', 'utf8');
+
+    text.split('\n').forEach(function(element) {
     
-    const info = line.split(' ');
-    if(info[0] == '#'){
-        // Do nothing
-    }else if (info.length == 1){
-        model = info[0];
-    }else if (info.length == 2){
-        model = info[0];
-        quantum = Number(info[1]);
-    }else{
-        processTable.push(new process.Process(info[0], info[1], info[2], info[3], info[4]));
-        processID.push(Number(info[0]));
-        totalTime += Number(info[2]);
-    }
-    
-    if (ended){
-        processTable.sort(function(a, b){
-            return a.joinTime > b.joinTime;
-        });
+        const info = element.split(' ');
+        if(info[0] == '#'){
+            // Do nothing
+        }else if (info.length == 1){
+            model = info[0];
+        }else if (info.length == 2){
+            model = info[0];
+            quantum = Number(info[1]);
+        }else{
 
-        
-
-        if (model == 'fcfs'){
-            const chart = fcfs(processTable);
-            var time = new Time();
-
-            processID.forEach(function(id) {
-                const process = processTable.find(function(element, pID){
-                    return element.pid == pID;
-                });
-
-                const arrival = process.joinTime;
-
-                time.calWait(chart, id, arrival);
-                time.calTurn(chart, id, arrival);
+            // Fill the processes info
+            processTable.push(new process.Process(info[0], info[1], info[2], info[3], info[4]));
+            processID.push({
+                id: Number(info[0]),
+                arrival: Number(info[3])
             });
-
-            console.log(time);
-        }else if(model == 'nsjf'){
-            const chart = nsjf(processTable, totalTime);
-        }else if(model == 'sjf'){
-            const chart = sjf(processTable, totalTime);
-        }else if(model == 'rr'){
-            const chart = rr(processTable, 4, totalTime);
+            totalTime += Number(info[2]);
         }
+    });
+
+    // If all processes are loaded
+    processTable.sort(function(a, b){
+        return a.joinTime > b.joinTime;
+    });
+
+    var chart = [];
+
+    // Set scheduler model
+    if (model == 'fcfs'){
+        chart = fcfs(processTable);
+    }else if(model == 'nsjf'){
+        chart = nsjf(processTable, totalTime);
+    }else if(model == 'sjf'){
+        chart = sjf(processTable, totalTime);
+    }else if(model == 'rr'){
+        chart = rr(processTable, quantum, totalTime);
     }
-});
+    
+    // Calculate time
+    //timing(chart, processID);
+    return chart;
+}
 
+/**
+ * Time calculation
+ * @param {Work} chart - Gantt chart, RRWork is also acceptable.
+ * @param {Array} idArr - Array for id and jointime
+ */
+function timing(chart, idArr){
+    var timeArr = [];
 
+    // Sort by pid
+    idArr.sort(function(a, b){
+        return a.id > b.id;
+    });
+
+    // Calculate time for each process
+    idArr.forEach(function(element) {
+        var time = new Time();
+        time.calWait(chart, element.id, element.arrival);
+        time.calTurn(chart, element.id, element.arrival);
+        timeArr.push(time);
+    });
+
+    // Ready for calculate average time
+    var avgWait = 0, avgTurn = 0;
+
+    timeArr.forEach(function(element) {
+        avgWait += element.wait;
+        avgTurn += element.turnaround;
+    });
+
+    avgTurn /= timeArr.length;
+    avgWait /= timeArr.length;
+    
+    console.log(/*'The timing infomation is as followed: \n'+ */timeArr);
+    console.log('Average wait time: ' + avgWait.toString());
+    console.log('Average turnaround time: ' + avgTurn.toString());
+}
+
+exports.generateChart = generateChart;

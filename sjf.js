@@ -1,4 +1,4 @@
-const work = require('./work.js');
+const work = require('./work');
 const Work = work.Work;
 
 var chart = [];
@@ -8,7 +8,7 @@ var queue = [];
 
 /**
  * Non-preemptive Shortest Job First Scheduler
- * @param {Object} processTable - Orocess Object
+ * @param {Process} processTable - Orocess Object
  */
 var scheduler_non = function(processTable, totalTime){
     var time = 0;
@@ -35,6 +35,11 @@ var scheduler_non = function(processTable, totalTime){
     
 }
 
+/**
+ * Preemptive Shortest Job First Scheduler
+ * @param {Process} processTable - Orocess Object
+ * @param {Number} totalTime - Total process time
+ */
 var scheduler = function(processTable, totalTime){
 
     var minRequire = 999999;
@@ -93,7 +98,10 @@ var scheduler = function(processTable, totalTime){
     return chart;
 }
 
-
+/**
+ * Sort function for queue
+ * @param {String} sortCase - Determine which case to use. Two case is not the same requirement.
+ */
 function queueSort(sortCase){
     if(sortCase == 'non'){
         queue.sort(function(a, b){
@@ -108,7 +116,9 @@ function queueSort(sortCase){
     }
     
 }
-
+/**
+ * Clean the queue.
+ */
 function queueClean(){
     // Clean the queue
     while(queue.length > 0){

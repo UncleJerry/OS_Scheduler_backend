@@ -27,7 +27,6 @@ Work.prototype.putInto = function(current, timer){
     this.endTime = current + Number(timer);
     this.remain -= Number(timer);
 }*/
-
 Work.prototype.isNotComplete = function(){
     return this.remain > 0;
 }
@@ -41,21 +40,37 @@ Work.prototype.isNotComplete = function(){
  * @param {Number} quantum - Quantum setting
  */
 RRWork = function (pid, current, timer, total, quantum){
+    // Inheritance from Work Object
     Work.call(this, pid, current, timer, total);
     this.quantum = Number(quantum);
 }
 
+/**
+ * Inheritance from Work Object
+ */
 RRWork.prototype = Object.create(Work.prototype);
 
+/**
+ * Chech if the job is done.
+ * @return {Bool} - True if remain is 0 or less
+ */
 RRWork.prototype.done = function (){
     return this.remain <= 0;
 }
 
+/**
+ * Down the quantum. 
+ * @param {Number} time - For compatibility this should be current time.
+ */
 RRWork.prototype.down = function(time){
     this.quantum -= Number(time) - this.endTime;
     this.update(time);
 }
 
+/**
+ * Reload the RRWork to queue
+ * @return {RRWork} - A queued RRWork object
+ */
 RRWork.prototype.reload = function(){
     return (new RRWork(this.pid, -1, 0, this.remain, 0));
 }

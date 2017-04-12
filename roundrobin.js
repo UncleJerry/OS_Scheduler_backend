@@ -1,4 +1,4 @@
-const RRWork = require('./work.js').RRWork;
+const RRWork = require('./work').RRWork;
 
 
 var scheduler = function(processTable, quantum, totalTime){
@@ -20,7 +20,6 @@ var scheduler = function(processTable, quantum, totalTime){
             chart[chart.length - 1].down(time);
 
             if(chart[chart.length - 1].quantum == 0 || chart[chart.length - 1].done() && queue.length > 0){
-                console.log(queue);
                 if(chart[chart.length - 1].quantum == 0 && !chart[chart.length - 1].done()){
                     queue.push(chart[chart.length - 1].reload());
                     while(queue.length > 0 && queue[0].done()){
