@@ -47,5 +47,11 @@ Time.prototype.calTurn = function(chart, pID, arrival){
     this.turnaround = endTime - Number(arrival);
     this.pid = pID;
 }
+/**
+ * A object print function
+ */
+Time.prototype.toPrint = function(){
+    return 'Time { pid: ' + this.pid + ', wait time: ' + this.wait + ', turnaround time: ' + this.turnaround + ' }\n';
+}
 
 exports.Time = Time;

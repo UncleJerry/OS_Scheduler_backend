@@ -35,7 +35,10 @@ var quantum = 0;
 // Mark for total CPU time requirment
 var totalTime = 0;
 
-
+/**
+ * Function to generate a gantt chart
+ * @return {String} - A gantt chart and a timing report
+ */
 function generateChart(){
     var text = fs.readFileSync('job', 'utf8');
 
@@ -78,10 +81,16 @@ function generateChart(){
     }else if(model == 'rr'){
         chart = rr(processTable, quantum, totalTime);
     }
+    var report = 'Gantt Chart\n';
+
+    chart.forEach(function(element) {
+        report += element.toPrint(); + '\n';
+    });
     
+    report += timing(chart, processID);
     // Calculate time
-    //timing(chart, processID);
-    return chart;
+    timing(chart, processID);
+    return report;
 }
 
 /**
@@ -115,7 +124,16 @@ function timing(chart, idArr){
 
     avgTurn /= timeArr.length;
     avgWait /= timeArr.length;
+    var returnStr = 'Timing report\n';
+
     
+
+    timeArr.forEach(function(element) {
+        returnStr += element.toPrint();
+    });
+    returnStr += 'Average wait time: ' + avgWait.toString() +'\n';
+    returnStr += 'Average turnaround time: ' + avgTurn.toString();
+    return returnStr;
     console.log(/*'The timing infomation is as followed: \n'+ */timeArr);
     console.log('Average wait time: ' + avgWait.toString());
     console.log('Average turnaround time: ' + avgTurn.toString());

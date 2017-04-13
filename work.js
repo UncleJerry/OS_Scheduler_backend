@@ -32,6 +32,13 @@ Work.prototype.isNotComplete = function(){
 }
 
 /**
+ * A object print function
+ */
+Work.prototype.toPrint = function(){
+    return 'Work { pid: ' + this.pid + ', startTime: ' + this.startTime + ', endTime: ' + this.endTime + ', remain: ' + this.remain + ' }\n'; 
+}
+
+/**
  * Round Robin creation
  * @param {Number} pid - Process ID
  * @param {Number} current - Current time
