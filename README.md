@@ -1,4 +1,4 @@
-# Process Scheduler based on HTML5
+# Process Scheduler based on Javascript
 
 > A simulator of process scheduling algorithms.
 >
@@ -10,9 +10,7 @@
 
 - [x] First-Come First-Serve (FCFS),
 - [x] Shortest Job First (SJF), both preemptive and non-preemptive,
-- [x] Round-robin (RR),
-- [ ] Priority Scheduling: both preemptive and non-preemptive,
-- [ ] Multi-queue Scheduling (to be implemented)
+- [x] Round-robin (RR)
 
 
 
@@ -24,9 +22,6 @@
 
 - [x] Basic access control with different users - By identity in account table
 
-- [ ] Further access control.
-
-- [ ] User behaviors tracing and recording by DB.
 
 
 ## Test
